@@ -1,18 +1,17 @@
 from file.disk import Disk
 from file.files import File
 from file.operations import Operation
+from utils.dir import ROOT_DIR
 
 class FileManager:
-    disk: Disk
-    files: list[File] = []
-    operations: list[Operation] = []
     def __init__(self) -> None:
-        # self.operations = [Operation()]
-        pass
+        self.disk: Disk
+        self.files: list[File] = []
+        self.operations: list[Operation] = []
 
     def read_files(self) -> None:
         list = []
-        with open('/home/gustavo/Projetos/fso-proj/src/input/files.txt') as files_file:
+        with open(ROOT_DIR+'input/files.txt') as files_file:
             list = files_file.readlines()
             num_files = int(list[1].strip())
 

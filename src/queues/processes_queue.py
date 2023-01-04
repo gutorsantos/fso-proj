@@ -2,7 +2,7 @@ from queue import Queue
 
 MAX_QUEUE_SIZE = 1000
 
-class Queue:
+class ProcessesQueue:
 
     def __init__(self) -> None:
         self.real_time_queue = Queue(maxsize=MAX_QUEUE_SIZE)
