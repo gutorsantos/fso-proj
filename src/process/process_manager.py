@@ -17,15 +17,14 @@ class ProcessManager:
 
         self.insert_process_queue(self.process[0], 'rt')
 
+    def insert_process_real_time_queue(self, process):
+        self.queue.real_time_queue.put(process)
+
+    def insert_process_user_queue(self, process):
+        pass #     self.queue.real_time_queue.put(process)
+
     def insert_process_queue(self, process, type):
         if (type == 'rt'):
             self.insert_process_real_time_queue(process)
         else:
             self.insert_process_user_queue(process)
-
-    def insert_process_real_time_queue(self, process):
-        self.queue.real_time_queue.put(process)
-
-    def insert_process_user_queue(self, process):
-    #     self.queue.real_time_queue.put(process)
-        pass
