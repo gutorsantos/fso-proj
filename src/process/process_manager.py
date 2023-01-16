@@ -4,7 +4,7 @@ from queues.processes_queue import ProcessesQueue
 
 class ProcessManager:
     def __init__(self) -> None:
-        self.process: list[Process] = []
+        self.processes_table: list[Process] = []
         self.queue = ProcessesQueue()
         pass
 
@@ -13,9 +13,9 @@ class ProcessManager:
         with open(ROOT_DIR+'input/processes.txt') as processes_file:
             list = processes_file.readlines()
 
-        self.process = [Process(p.split(','), id) for (id, p) in enumerate(list)]
+        self.processes_table = [Process(p.split(','), id) for (id, p) in enumerate(list)]
 
-        self.insert_process_queue(self.process[0], 'rt')
+        self.insert_process_queue(self.processes_table[0], 'rt')
 
     def insert_process_real_time_queue(self, process):
         self.queue.real_time_queue.put(process)

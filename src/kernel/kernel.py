@@ -10,7 +10,7 @@ class Kernel:
     def run(self) -> None:
         self.start()
 
-        print(self.process_manager.process)
+        print(self.process_manager.processes_table)
         print(self.file_manager.disk)
         print(self.file_manager.files)
         print(self.file_manager.operations)

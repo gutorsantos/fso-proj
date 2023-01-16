@@ -4,6 +4,7 @@ class Process:
 
         ## Identificacao
         self.pid = id
+        # self.uid = uid (?)
        
         ## Quotas
         self.starting_time = int(process[0].strip())
