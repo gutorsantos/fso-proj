@@ -1,3 +1,5 @@
+from memory.memory import Memory
+
 class MemoryManager:
     def __init__(self) -> None:
-        pass
+        self.memory = Memory()
