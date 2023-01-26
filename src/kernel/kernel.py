@@ -1,11 +1,15 @@
 from process.process_manager import ProcessManager
 from file.file_manager import FileManager
+from resource.resource_manager import ResourceManager
+from memory.memory_manager import MemoryManager
 import time
 
 class Kernel:
     def __init__(self) -> None:
         self.process_manager = ProcessManager()
         self.file_manager = FileManager()
+        self.resource_manager = ResourceManager()
+        self.memory_manager = MemoryManager()
 
     def run(self) -> None:
         self.start()
