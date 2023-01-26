@@ -21,7 +21,7 @@ class Process:
 
         ''' Espaco de enderecamento '''
 
-        self.memory_block = int(process[3].strip())
+        self.memory_block_size = int(process[3].strip())
 
         ''' Fim do espaco de enderecamento '''
 
