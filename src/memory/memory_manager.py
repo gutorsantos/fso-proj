@@ -13,4 +13,4 @@ class MemoryManager(metaclass=Singleton):
         return process.memory_start_block
     
     def free(self, process: Process):
-        self.memory.malloc(process.memory_start_block, process.memory_block_size)
+        self.memory.free(process.memory_start_block, process.memory_block_size)
