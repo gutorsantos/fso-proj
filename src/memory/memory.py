@@ -1,6 +1,7 @@
 from utils.ascii_table import make_table
+from utils.singleton import Singleton
 
-class Memory:
+class Memory(metaclass=Singleton):
     def __init__(self, real_time_size, user_size) -> None:
         self.real_time_size = real_time_size
         self.user_size = user_size

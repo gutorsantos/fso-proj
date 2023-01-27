@@ -1,7 +1,8 @@
 from memory.memory import Memory
 from process.process import Process
+from utils.singleton import Singleton
 
-class MemoryManager:
+class MemoryManager(metaclass=Singleton):
     def __init__(self) -> None:
         self.MEMORY_REAl_TIME_SIZE = 64
         self.MEMORY_USER_SIZE = 960
