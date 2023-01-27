@@ -1,9 +1,9 @@
 from process.process_manager import ProcessManager
 from file.file_manager import FileManager
-# from resource.resource_manager import ResourceManager
 from memory.memory_manager import MemoryManager
-import time
 from kernel.clock import Clock
+from resources.resource_manager import ResourceManager
+import time
 
 class Kernel:
     def __init__(self) -> None:
