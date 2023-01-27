@@ -28,7 +28,7 @@ class Memory:
 
     
     def __best_fit(self, priority, mem_block_size):
-        free_block = self.__get_free_blocks(priority, mem_block_size)
+        free_block = self.__get_free_blocks(priority)
         free_block = list(filter(lambda x: x[1] >= mem_block_size, free_block))
         free_block = list(map(lambda x: (x[0], x[1]-mem_block_size), free_block))
 

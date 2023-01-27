@@ -15,7 +15,7 @@ class ProcessManager:
 
         self.processes_table = [Process(p.split(','), id) for (id, p) in enumerate(list)]
 
-        self.insert_process_queue(self.processes_table[0], 'rt')
+        # self.insert_process_queue(self.processes_table[0], 'rt')
 
     def insert_process_real_time_queue(self, process):
         self.queue.real_time_queue.put(process)
