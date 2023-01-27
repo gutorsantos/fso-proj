@@ -20,7 +20,7 @@ class Process:
         '''Fim do contexto de software'''
 
         ''' Espaco de enderecamento '''
-
+        self.memory_start_block = -1
         self.memory_block_size = int(process[3].strip())
 
         ''' Fim do espaco de enderecamento '''
@@ -32,4 +32,4 @@ class Process:
         
 
     def __repr__(self) -> str:
-        return f'Processo {self.pid} iniciou no momento {self.starting_time}, possui prioridade {self.priority}, quota de processamento {self.process_time}, ocupa {self.memory_block}'
+        return f'Processo {self.pid} iniciou no momento {self.starting_time}, possui prioridade {self.priority}, quota de processamento {self.process_time}, ocupa {self.memory_block_size}'
