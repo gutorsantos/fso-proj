@@ -9,6 +9,7 @@ class Process:
         ## Quotas
         self.starting_time = int(process[0].strip())
         self.process_time = int(process[2].strip())
+        self.aging = 0
         self.printer_id = int(process[4].strip())
         self.scanner_request = int(process[5].strip())
         self.modem_request = int(process[6].strip())

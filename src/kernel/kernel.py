@@ -15,16 +15,18 @@ class Kernel:
 
     def run(self) -> None:
         self.start()
-        # time.sleep(7)
-        
+        time.sleep(7)
+        print(self.clock.get_miliseconds())
+        self.process_manager.insert_process_queue(self.process_manager.processes_table[2])
         self.process_manager.insert_process_queue(self.process_manager.processes_table[0])
         self.process_manager.insert_process_queue(self.process_manager.processes_table[1])
-        self.process_manager.thread.join()
+        self.process_manager.real_time_thread.join()
+        self.process_manager.user_thread.join()
         # print(self.clock.get_miliseconds())
-        # self.clock.thread.join()
+        self.clock.thread.join()
 
     def start(self) -> None:
         self.process_manager.read_processes()
         self.file_manager.read_files()
-        # self.clock.thread.start()
+        self.clock.thread.start()
 
