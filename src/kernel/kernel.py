@@ -15,9 +15,9 @@ class Kernel:
 
     def run(self) -> None:
         self.start()
-        time.sleep(7)
         print(self.clock.get_miliseconds())
         self.process_manager.insert_process_queue(self.process_manager.processes_table[2])
+        time.sleep(7)
         self.process_manager.insert_process_queue(self.process_manager.processes_table[0])
         self.process_manager.insert_process_queue(self.process_manager.processes_table[1])
         self.process_manager.real_time_thread.join()

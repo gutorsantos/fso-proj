@@ -24,6 +24,9 @@ class ProcessManager:
         self.processes_table = [Process(p.split(','), id) for (id, p) in enumerate(list)]
 
     def insert_process_queue(self, process: Process):
+        if(not process or process.process_time <= 0):
+            return
+
         if (process.priority):
             self.queue.user_queue.put(process)
         else:
@@ -48,20 +51,6 @@ class ProcessManager:
     def __wait_for_process(self):
         self.real_time_thread.start()
         self.user_thread.start()
-        # while(True):
-        #     print('esperando por processo...')
-        #     if(not self.queue.real_time_queue.empty()):
-        #         first = self.queue.real_time_queue.get()
-        #         print('executando processo ', first.pid)
-        #         self.__context_switching(first)
-        #         time.sleep(5)
-        #     else:
-        #         # if(not self.user.empty()):
-        #         #     print('executando processo ', self.real_time_queue.get().pid)
-        #         #     time.sleep(5)
-        #         pass
-
-        #     time.sleep(1)
 
     def down(self, process: Process):
         if(process.process_time <= 0):
@@ -72,7 +61,16 @@ class ProcessManager:
         while process.process_time > 0:
             print('executando processo rt', process.pid)
             process.process_time -= 1
-        pass
+            time.sleep(1)
+
+    def user_running(self):
+        process = self.current_proc
+        while process.process_time > 0:
+            if(not self.queue.real_time_queue.empty()):
+                return
+            print('executando processo user', process.pid)
+            process.process_time -= 1
+            time.sleep(1)
 
     def real_time_queue_thread(self):
         """ Thread function that will be waiting for the arriving real-time processes """        
@@ -82,6 +80,7 @@ class ProcessManager:
                 self.queue_lock.acquire()
                 first: Process = self.queue.real_time_queue.get()
                 last = self.__context_switching(first)
+                self.insert_process_queue(last)
                 self.real_time_running()
                 self.queue_lock.release()
             time.sleep(1)
@@ -97,8 +96,7 @@ class ProcessManager:
                 else:
                     first: Process = self.queue.user_queue.get()
                     last = self.__context_switching(first)
-                    print('saiu processo', last)
-                    print('executando processo user', first.pid)
-                    time.sleep(5)
+                    self.user_running()
+                    self.insert_process_queue(last)
                     self.queue_lock.release()
             time.sleep(1)
