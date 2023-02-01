@@ -10,10 +10,10 @@ class Process:
         self.starting_time = int(process[0].strip())
         self.process_time = int(process[2].strip())
         self.aging = 0
-        self.printer_id = int(process[4].strip())
-        self.scanner_request = int(process[5].strip())
-        self.modem_request = int(process[6].strip())
-        self.disk_id = int(process[7].strip())
+        self.printer = int(process[4].strip())
+        self.scanner = int(process[5].strip())
+        self.modem = int(process[6].strip())
+        self.disk = int(process[7].strip())
 
         ## Privilegios
         self.priority = int(process[1].strip())
