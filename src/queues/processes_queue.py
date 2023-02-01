@@ -8,7 +8,7 @@ MAX_QUEUE_SIZE = 1000
 class ProcessesQueue:
 
     def __init__(self) -> None:
-        self.real_time_queue = Queue(maxsize=MAX_QUEUE_SIZE)
+        self.real_time_queue = Queue()
         self.user_queue = UserQueue()
 
     def empty(self):
@@ -16,4 +16,3 @@ class ProcessesQueue:
     
     def get_size(self):
         self.real_time_queue.qsize() + self.user_queue.qsize()
-    
