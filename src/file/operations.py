@@ -1,5 +1,5 @@
 class Operation:
-    def __init__(self, process_id, operation_id: str, file_name: str, created_block_size:str='-1') -> None:
+    def __init__(self, process_id: str, operation_id: str, file_name: str, created_block_size:str='-1') -> None:
         self.process_id = int(process_id.strip())
         self.operation_id = int(operation_id.strip())
         self.file_name = file_name.strip()

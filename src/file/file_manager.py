@@ -2,6 +2,7 @@ from file.disk import Disk
 from file.files import File
 from file.operations import CreateOperation, DeleteOperation, Operation
 from utils.dir import ROOT_DIR
+from process.process import Process
 
 class FileManager:
     def __init__(self) -> None:
@@ -20,7 +21,7 @@ class FileManager:
             operation_list = list[num_files+2:len(list)]
 
             self.disk = Disk(disk_size)
-            self.files = [File(f.split(',')) for f in file_list]
+            self.files = [File(*f.split(',')) for f in file_list]
             self.operations = [Operation(*o.split(',')) for o in operation_list]
             # print(self.operations)
             # self.operations = [CreateOperation(*o.split(',')) if o.split(',') == '0' else DeleteOperation(*o.split(',')) for o in operation_list]
@@ -30,14 +31,14 @@ class FileManager:
         for file in self.files:
             self.disk.fill(file.first_block, file.block_size, file.name)
 
-    def allocate(self, filename, file_size, pid):
+    def allocate(self, filename: str, file_size: int, pid: int):
         start_addr = self.disk.alloc(file_size, filename)
         if(start_addr < 0):
             print(f'O processo {pid} não pode criar o arquivo {filename} (falta de espaço).')
 
         return start_addr
 
-    def execute_operation(self, operation, process):
+    def execute_operation(self, operation: Operation, process: Process):
         if(operation.operation_id):
             file = list(filter(lambda f: f.name == operation.file_name, self.files))
             if(len(file) <= 0):
@@ -51,10 +52,9 @@ class FileManager:
             self.disk.free(file.first_block, file.block_size)
         else:
             start_addr = self.allocate(operation.file_name, operation.created_block_size, process.pid)
-            new_file = File([operation.file_name, str(start_addr), str(operation.created_block_size)])
-            new_file.created_by = process.pid
+            new_file: File = File(operation.file_name, str(start_addr), str(operation.created_block_size), process.pid)
             self.files.append(new_file)
 
-    def get_operations(self, pid):
+    def get_operations(self, pid: int):
         return list(filter(lambda o: o.process_id == pid, self.operations))
 
