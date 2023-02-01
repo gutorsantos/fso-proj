@@ -65,7 +65,7 @@ class ProcessManager:
 
     def user_running(self):
         process, queue = self.current_proc
-        remaining_quantum = self.queue.user_queue.get_queue_quantum(queue)
+        remaining_quantum = self.queue.user_queue.get_queue_quantum(queue)      # TODO: se for essa a implementacao tem que corrigir o quantum resetar se processo for mantido na mesma fila
         self.flag_rt_interrupt = False
         while remaining_quantum > 0 and process.process_time > 0:
             if(not self.queue.real_time_queue.empty()):
