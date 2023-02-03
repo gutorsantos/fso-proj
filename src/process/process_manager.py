@@ -51,9 +51,11 @@ class ProcessManager:
         if(last_proc):
             self.memory_manager.free(last_proc)
         if(process[0]):
-            self.memory_manager.alloc(process[0])
+            result = self.memory_manager.alloc(process[0])
+            if(result < 0):
+                return -1
         self.current_proc = process
-        return last_proc, last_queue
+        return 1
     
     def __wait_for_process(self):
         self.real_time_thread.start()
@@ -104,8 +106,9 @@ class ProcessManager:
             if(not self.queue.real_time_queue.empty()):
                 self.queue_lock.acquire()
                 first = (self.queue.real_time_queue.get(), self.queue.real_time_queue)
-                last = self.__context_switching(first)
-                self.real_time_running()
+                result = self.__context_switching(first)
+                if(result > 0):
+                    self.real_time_running()
                 self.queue_lock.release()
             time.sleep(1)
 
@@ -121,8 +124,9 @@ class ProcessManager:
                     first = self.queue.user_queue.get()
                     resources = self.resource_manager.request(first[0])
                     if(resources):
-                        last = self.__context_switching(first)
-                        self.user_running()
+                        result = self.__context_switching(first)
+                        if(result > 0):
+                            self.user_running()
                         # self.queue.user_queue.aging()
                         # print(self.queue.user_queue.q2.queue)
                     elif(not resources):
