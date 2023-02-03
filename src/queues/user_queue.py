@@ -49,11 +49,10 @@ class UserQueue:
         return self.q1.qsize() + self.q2.qsize() + self.q3.qsize()
     
     def down(self, process, last_queue, interrupt):
-        print(process, last_queue)
         if(not process):
             return
 
-        if(process.priority and interrupt):
+        if(interrupt):
             last_queue.put(process)
             return 
         
@@ -64,8 +63,8 @@ class UserQueue:
             self.q3.put(process)
         elif(last_queue == self.q3):
             self.q3.put(process)
-        else:
-            return
+        # else:
+        #     return
         
     def aging(self):
         for proc in self.q1.queue:
