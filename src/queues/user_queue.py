@@ -49,6 +49,7 @@ class UserQueue:
         return self.q1.qsize() + self.q2.qsize() + self.q3.qsize()
     
     def down(self, process, last_queue, interrupt):
+        print(process, last_queue)
         if(not process):
             return
 
@@ -57,6 +58,7 @@ class UserQueue:
             return 
         
         if(last_queue == self.q1):
+            print(f'process {process.pid} desceu para fila 2')
             self.q2.put(process)
         elif(last_queue == self.q2):
             self.q3.put(process)

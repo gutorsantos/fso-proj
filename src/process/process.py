@@ -13,7 +13,7 @@ class Process:
         self.printer = int(process[4].strip())
         self.scanner = int(process[5].strip())
         self.modem = int(process[6].strip())
-        self.disk = int(process[7].strip())
+        self.sata = int(process[7].strip())
 
         ## Privilegios
         self.priority = int(process[1].strip())

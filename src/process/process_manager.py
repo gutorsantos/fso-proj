@@ -2,6 +2,7 @@ from process.process import Process
 from utils.dir import ROOT_DIR
 from queues.processes_queue import ProcessesQueue
 from memory.memory_manager import MemoryManager
+from resources.resource_manager import ResourceManager
 from threading import Thread, Lock
 import time
 from queue import Queue
@@ -12,10 +13,12 @@ class ProcessManager:
         self.processes_table: list[Process] = []
         self.queue = ProcessesQueue()
         self.memory_manager = MemoryManager()
+        self.resource_manager = ResourceManager()
         self.current_proc = (None, None)
         self.real_time_thread = Thread(target=self.real_time_queue_thread)
         self.user_thread = Thread(target=self.user_queue_thread)
         self.queue_lock = Lock()
+        self.blocked_processes = []
         self.flag_rt_interrupt = False
         self.__wait_for_process()
 
@@ -56,6 +59,14 @@ class ProcessManager:
         self.real_time_thread.start()
         self.user_thread.start()
                 
+    def unblock_processes(self):
+        for blocked in self.blocked_processes:
+            result = self.resource_manager.request(blocked)
+            if(result > 0):
+                self.blocked_processes.remove(blocked)
+                self.queue.user_queue.put(blocked)
+                break
+        
     def real_time_running(self):
         process, _ = self.current_proc
         while process.process_time > 0:
@@ -67,17 +78,23 @@ class ProcessManager:
         process, queue = self.current_proc
         remaining_quantum = self.queue.user_queue.get_queue_quantum(queue)
         self.flag_rt_interrupt = False
+        
         while remaining_quantum > 0 and process.process_time > 0:
+
             if(not self.queue.real_time_queue.empty()):
                 self.flag_rt_interrupt = True
-                # return nao pode ser preemptado no meio do quantum
+
             print('executando processo user', process.pid)
             remaining_quantum -= 1
             process.process_time -= 1
-            # self.queue.user_queue.aging()
             time.sleep(1)
-        p = self.__context_switching((None, None))
-        self.queue.user_queue.down(*p, self.flag_rt_interrupt)
+
+        if(process.process_time <= 0):
+            print('desalocou recursos')
+            self.resource_manager.deallocate(process)
+            self.unblock_processes()   
+        else:
+            self.queue.user_queue.down(*self.current_proc, self.flag_rt_interrupt)
 
 
     def real_time_queue_thread(self):
@@ -88,7 +105,6 @@ class ProcessManager:
                 self.queue_lock.acquire()
                 first = (self.queue.real_time_queue.get(), self.queue.real_time_queue)
                 last = self.__context_switching(first)
-                self.queue.user_queue.down(*last, self.flag_rt_interrupt)
                 self.real_time_running()
                 self.queue_lock.release()
             time.sleep(1)
@@ -103,8 +119,15 @@ class ProcessManager:
                     self.queue_lock.release()
                 else:
                     first = self.queue.user_queue.get()
-                    last = self.__context_switching(first)
-                    self.queue.user_queue.down(*last, self.flag_rt_interrupt)
-                    self.user_running()
+                    resources = self.resource_manager.request(first[0])
+                    if(resources):
+                        last = self.__context_switching(first)
+                        self.user_running()
+                        # self.queue.user_queue.aging()
+                        # print(self.queue.user_queue.q2.queue)
+                    elif(not resources):
+                        print('bloqueou')
+                        self.blocked_processes.append(first[0])
+
                     self.queue_lock.release()
             time.sleep(1)
