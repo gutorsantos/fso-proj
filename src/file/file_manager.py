@@ -3,8 +3,9 @@ from file.files import File
 from file.operations import CreateOperation, DeleteOperation, Operation
 from utils.dir import ROOT_DIR
 from process.process import Process
+from utils.singleton import Singleton
 
-class FileManager:
+class FileManager(metaclass=Singleton):
     def __init__(self) -> None:
         self.disk: Disk
         self.files: list[File] = []
@@ -39,6 +40,7 @@ class FileManager:
         return start_addr
 
     def execute_operation(self, operation: Operation, process: Process):
+        self.operations.remove(operation)
         if(operation.operation_id):
             file = list(filter(lambda f: f.name == operation.file_name, self.files))
             if(len(file) <= 0):
@@ -50,10 +52,18 @@ class FileManager:
                 print(f'O processo {process.pid} não pode deletar o arquivo {operation.file_name} (sem permissão).')
                 return
             self.disk.free(file.first_block, file.block_size)
+            print(f'O processo {process.pid} deletou o arquivo {operation.file_name}.')
         else:
             start_addr = self.allocate(operation.file_name, operation.created_block_size, process.pid)
+        
+            if(start_addr == -1):
+                return
+
             new_file: File = File(operation.file_name, str(start_addr), str(operation.created_block_size), process.pid)
             self.files.append(new_file)
+            block_range = list(range(start_addr, start_addr+operation.created_block_size))
+            block_range = list(map(lambda x: str(x), block_range))
+            print(f'O processo {process.pid} criou o arquivo {operation.file_name} (blocos {" ".join(block_range)}).')
 
     def get_operations(self, pid: int):
         return list(filter(lambda o: o.process_id == pid, self.operations))

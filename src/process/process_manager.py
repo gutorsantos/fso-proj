@@ -3,6 +3,7 @@ from utils.dir import ROOT_DIR
 from queues.processes_queue import ProcessesQueue
 from memory.memory_manager import MemoryManager
 from resources.resource_manager import ResourceManager
+from file.file_manager import FileManager
 from threading import Thread, Lock
 import time
 from queue import Queue
@@ -14,6 +15,7 @@ class ProcessManager:
         self.queue = ProcessesQueue()
         self.memory_manager = MemoryManager()
         self.resource_manager = ResourceManager()
+        self.file_manager = FileManager()
         self.current_proc = (None, None)
         self.real_time_thread = Thread(target=self.real_time_queue_thread)
         self.user_thread = Thread(target=self.user_queue_thread)
@@ -71,8 +73,13 @@ class ProcessManager:
         
     def real_time_running(self):
         process, _ = self.current_proc
+        o = 0
+        operations = self.file_manager.get_operations(process.pid)
         while process.process_time > 0:
             print('executando processo rt', process.pid)
+            if(o < len(operations)):
+                self.file_manager.execute_operation(operations[o], process)
+                o += 1
             process.process_time -= 1
             time.sleep(1)
 
@@ -80,6 +87,8 @@ class ProcessManager:
         process, queue = self.current_proc
         remaining_quantum = self.queue.user_queue.get_queue_quantum(queue)
         self.flag_rt_interrupt = False
+        o = 0
+        operations = self.file_manager.get_operations(process.pid)
         
         while remaining_quantum > 0 and process.process_time > 0:
 
@@ -87,6 +96,9 @@ class ProcessManager:
                 self.flag_rt_interrupt = True
 
             print('executando processo user', process.pid)
+            if(o < len(operations)):
+                self.file_manager.execute_operation(operations[o], process)
+                o += 1
             remaining_quantum -= 1
             process.process_time -= 1
             time.sleep(1)
