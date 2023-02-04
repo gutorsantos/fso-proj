@@ -18,8 +18,8 @@ class ProcessManager:
         self.resource_manager = ResourceManager()
         self.file_manager = FileManager()
         self.current_proc = (None, None)
-        self.real_time_thread = Thread(target=self.real_time_queue_thread)
-        self.user_thread = Thread(target=self.user_queue_thread)
+        self.real_time_thread = Thread(target=self.real_time_queue_thread, daemon=True)
+        self.user_thread = Thread(target=self.user_queue_thread, daemon=True)
         self.queue_lock = Lock()
         self.blocked_processes = []
         self.flag_rt_interrupt = False

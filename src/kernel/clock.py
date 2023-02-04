@@ -6,7 +6,7 @@ class Clock:
     def __init__(self) -> None:
         self.miliseconds = 0
         self.lock = Lock()
-        self.thread = Thread(target=self.tick)
+        self.thread = Thread(target=self.tick, daemon=True)
     
     def tick(self):
         now = time.time() * 1000
