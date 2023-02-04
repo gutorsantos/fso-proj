@@ -33,4 +33,12 @@ class Process:
         
 
     def __repr__(self) -> str:
-        return f'Processo {self.pid} iniciou no momento {self.starting_time}, possui prioridade {self.priority}, quota de processamento {self.process_time}, ocupa {self.memory_block_size}'
+        return f'''
+        PID: {self.pid}
+        blocks: {self.memory_block_size}
+        priority: {self.priority}
+        printers: {self.printer}
+        scanners: {self.scanner}
+        modems: {self.modem}
+        drives: {self.sata}
+        '''

@@ -75,13 +75,18 @@ class ProcessManager:
         process, _ = self.current_proc
         o = 0
         operations = self.file_manager.get_operations(process.pid)
+        print(f'''dispatcher =>{process}''')
+        print(f'''process {process.pid} => \nP{process.pid} STARTED''')
         while process.process_time > 0:
-            print('executando processo rt', process.pid)
+
+            print(f'P{process.pid} instruction {o}')
             if(o < len(operations)):
                 self.file_manager.execute_operation(operations[o], process)
                 o += 1
             process.process_time -= 1
             time.sleep(1)
+        
+        print(f'P{process.pid} return SIGINT')
 
     def user_running(self):
         process, queue = self.current_proc
@@ -89,13 +94,14 @@ class ProcessManager:
         self.flag_rt_interrupt = False
         o = 0
         operations = self.file_manager.get_operations(process.pid)
-        
+        print(f'''dispatcher =>{process}''')
+        print(f'''process {process.pid} => \nP{process.pid} STARTED''')
         while remaining_quantum > 0 and process.process_time > 0:
 
             if(not self.queue.real_time_queue.empty()):
                 self.flag_rt_interrupt = True
 
-            print('executando processo user', process.pid)
+            print(f'P{process.pid} instruction {o}')
             if(o < len(operations)):
                 self.file_manager.execute_operation(operations[o], process)
                 o += 1
@@ -105,6 +111,7 @@ class ProcessManager:
 
         if(process.process_time <= 0):
             print('desalocou recursos')
+            print(f'P{process.pid} return SIGINT')
             self.resource_manager.deallocate(process)
             self.unblock_processes()   
         else:
