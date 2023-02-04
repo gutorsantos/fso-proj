@@ -1,7 +1,8 @@
 import time
 from threading import Lock, Thread
+from utils.singleton import Singleton
 
-class Clock:
+class Clock(metaclass=Singleton):
 
     def __init__(self) -> None:
         self.miliseconds = 0
@@ -12,14 +13,14 @@ class Clock:
         now = time.time() * 1000
         last_frame = time.time() * 1000
         while True:
-            now = (time.time() * 1000)
-            delta = now - last_frame
-            last_frame = now
+            # now = (time.time() * 1000)
+            # delta = now - last_frame
+            # last_frame = now
 
-            if(delta < 1):
-                time.sleep(1)
+            # if(delta < 1):
+            time.sleep(1)
             self.lock.acquire()
-            self.miliseconds += delta
+            self.miliseconds += 1
             self.lock.release()
 
     def get_miliseconds(self):
