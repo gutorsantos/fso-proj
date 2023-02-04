@@ -1,5 +1,6 @@
 from process.process import Process
 from utils.dir import ROOT_DIR
+from utils.output import *
 from queues.processes_queue import ProcessesQueue
 from memory.memory_manager import MemoryManager
 from resources.resource_manager import ResourceManager
@@ -22,6 +23,7 @@ class ProcessManager:
         self.queue_lock = Lock()
         self.blocked_processes = []
         self.flag_rt_interrupt = False
+        self.out = Output()
         self.__wait_for_process()
 
     def read_processes(self) -> None:
@@ -75,18 +77,18 @@ class ProcessManager:
         process, _ = self.current_proc
         o = 0
         operations = self.file_manager.get_operations(process.pid)
-        print(f'''dispatcher =>{process}''')
-        print(f'''process {process.pid} => \nP{process.pid} STARTED''')
+        self.out.log(START_PROCESS, process=process)
         while process.process_time > 0:
 
+            print(f'executando processo {process.pid}')
             if(o < len(operations)):
-                print(f'P{process.pid} instruction {o}')
+                self.out.log(PROCESS_INSTRUCTION, pid=process.pid, op=o)
                 self.file_manager.execute_operation(operations[o], process)
                 o += 1
             process.process_time -= 1
             time.sleep(1)
         
-        print(f'P{process.pid} return SIGINT')
+        self.out.log(PROCESS_RETURN_SIGINT, pid=process.pid)
 
     def user_running(self):
         process, queue = self.current_proc
@@ -94,15 +96,15 @@ class ProcessManager:
         self.flag_rt_interrupt = False
         o = 0
         operations = self.file_manager.get_operations(process.pid)
-        print(f'''dispatcher =>{process}''')
-        print(f'''process {process.pid} => \nP{process.pid} STARTED''')
+        self.out.log(START_PROCESS, process=process)
         while remaining_quantum > 0 and process.process_time > 0:
 
             if(not self.queue.real_time_queue.empty()):
                 self.flag_rt_interrupt = True
 
+            print(f'executando processo {process.pid}')
             if(o < len(operations)):
-                print(f'P{process.pid} instruction {o}')
+                self.out.log(PROCESS_INSTRUCTION, pid=process.pid, op=o)
                 self.file_manager.execute_operation(operations[o], process)
                 o += 1
             remaining_quantum -= 1
@@ -110,8 +112,8 @@ class ProcessManager:
             time.sleep(1)
 
         if(process.process_time <= 0):
-            print('desalocou recursos')
-            print(f'P{process.pid} return SIGINT')
+            self.out.debug(DEALLOCATED_RESOURCES)
+            self.out.log(PROCESS_RETURN_SIGINT, pid=process.pid)
             self.resource_manager.deallocate(process)
             self.unblock_processes()   
         else:
@@ -121,7 +123,7 @@ class ProcessManager:
     def real_time_queue_thread(self):
         """ Thread function that will be waiting for the arriving real-time processes """        
         while(True):
-            print('esperando por processo rt...')
+            self.out.debug(WAITING_FOR_RT_PROCESS)
             if(not self.queue.real_time_queue.empty()):
                 self.queue_lock.acquire()
                 first = (self.queue.real_time_queue.get(), self.queue.real_time_queue)
@@ -134,7 +136,7 @@ class ProcessManager:
     def user_queue_thread(self):
         """ Thread function that will be waiting for the arriving user processes """      
         while(True):
-            print('esperando por processo usuario...')
+            self.out.debug(WAITING_FOR_USER_PROCESS)
             if(not self.queue.user_queue.empty()):
                 self.queue_lock.acquire()
                 if(not self.queue.real_time_queue.empty()):
@@ -149,7 +151,7 @@ class ProcessManager:
                         # self.queue.user_queue.aging()
                         # print(self.queue.user_queue.q2.queue)
                     elif(not resources):
-                        print('bloqueou')
+                        self.out.debug(BLOCKED_PROCESS)
                         self.blocked_processes.append(first[0])
 
                     self.queue_lock.release()

@@ -1,4 +1,5 @@
 from colorama import Fore, Back, Style
+from utils.singleton import Singleton
 
 # ERROR CODES
 NOT_ENOGH_MEMO = 1                      # memory does not have space
@@ -22,86 +23,88 @@ DEALLOCATED_RESOURCES = 12
 WAITING_FOR_RT_PROCESS = 13
 WAITING_FOR_USER_PROCESS = 14
 BLOCKED_PROCESS = 15
+DEBUG_MODE_ON = 16
 
-class Output:
+class Output(metaclass=Singleton):
 
     def __init__(self, debug_mode=False):
         self.debug_mode = debug_mode
 
     def error(self, code, **kwargs):
-        msg = ''
+        msg = Fore.RED + ''
         match code:
             case 1:
-                msg = f'O processo {kwargs.pid} não pode ser alocado na memória por falta de espaço'
+                msg += f'O processo {kwargs["pid"]} não pode ser alocado na memória por falta de espaço'
                 
             case 2:
-                msg = f'O processo {kwargs.pid} não pode criar o arquivo {kwargs.filename} (falta de espaço).'
+                msg += f'O processo {kwargs["pid"]} não pode criar o arquivo {kwargs["filename"]} (falta de espaço).'
             
             case 3:
-                msg = f'O processo {kwargs.process.pid} não pode deletar o arquivo {kwargs.operation.file_name} (sem permissão).'
+                msg += f'O processo {kwargs["process"].pid} não pode deletar o arquivo {kwargs["filename"]} (sem permissão).'
             
             case 4:
-                msg = f'O processo {kwargs.process.pid} não pode deletar o arquivo {kwargs.operation.file_name} porque ele não existe.'
+                msg += f'O processo {kwargs["pid"]} não pode deletar o arquivo {kwargs["filename"]} porque ele não existe.'
 
             case 5:
-                msg = f'O Processo {kwargs.process.pid} não conseguiu ser criado (recursos insuficientes)'
+                msg += f'O Processo {kwargs["pid"]} não conseguiu ser criado (recursos insuficientes)'
 
             case 6:
-                msg = f'O processo {kwargs.process.pid} foi bloqueado (não conseguiu obter {kwargs.resource} - requisitado: {kwargs.proc_quantity} (disponível {kwargs.max_quantity-kwargs.remaning})).'
+                msg += f'O processo {kwargs["pid"]} foi bloqueado (não conseguiu obter {kwargs["resource"]} - requisitado: {kwargs["proc_quantity"]} (disponível {kwargs["max_quantity"]-kwargs["remaning"]})).'
 
             case _:
-                msg = 'Error'
+                msg += 'Error'
 
-        msg = Fore.RED + msg + Fore.RESET
+        msg = msg + Fore.RESET
         print(msg)
 
     def sucess(self, code, **kwargs):
         msg = ''
         match code:
             case 7:
-                msg = f'O processo {kwargs.process.pid} deletou o arquivo {kwargs.operation.file_name}.'
+                msg += f'O processo {kwargs["pid"]} deletou o arquivo {kwargs["filename"]}.'
                 
             case 8:
-                msg = f'O processo {kwargs.process.pid} criou o arquivo {kwargs.operation.file_name} (blocos {" ".join(kwargs.block_range)}).'
+                msg += f'O processo {kwargs["pid"]} criou o arquivo {kwargs["filename"]} (blocos {" ".join(kwargs["block_range"])}).'
 
         msg = Fore.GREEN + msg + Fore.RESET
         print(msg)
 
     def log(self, code, **kwargs):
-        msg = ''
+        msg = Fore.MAGENTA + ''
         match code:
             case 9:
-                msg = f'''dispatcher =>{kwargs.process}'''
-                msg += f'''process {kwargs.process.pid} => \nP{kwargs.process.pid} STARTED'''
+                msg += f'''dispatcher => {kwargs['process']}'''
+                # msg += f'''process {kwargs['process']['pid']} => \nP{kwargs['process']['pid']} STARTED'''
                 
             case 10:
-                msg = f'P{kwargs.process.pid} instruction {kwargs.op}'
+                msg += f'P{kwargs["pid"]} instruction {kwargs["op"]}'
             
             case 11:
-                msg = f'P{kwargs.process.pid} return SIGINT'
+                msg += f'P{kwargs["pid"]} return SIGINT'
             
-        msg = Fore.GREEN + msg + Fore.RESET
+        msg = msg + Fore.RESET
         print(msg)
 
-    def debug(self, code, **kwargs):
+    def debug(self, code, *args, **kwargs):
         if(not self.debug_mode):
             return
         
-        msg = ''
+        msg = Fore.YELLOW + ''
         match code:
             case 12:
-                msg = 'desalocou recursos'
+                msg += 'desalocou recursos'
                 
             case 13:
-                msg = 'esperando por processo rt...'
+                msg += 'esperando por processo rt...'
             
             case 14:
-                msg = 'esperando por processo usuario...'
+                msg += 'esperando por processo usuario...'
 
             case 15:
-                msg = 'processo bloqueou'
-            
-        msg = Fore.GREEN + msg + Fore.RESET
-        print(msg)
+                msg += 'processo bloqueou'
 
-        
+            case 16:
+                msg += Fore.GREEN + 'DEGUB MODE ON'
+            
+        msg = msg + Fore.RESET
+        print(msg)

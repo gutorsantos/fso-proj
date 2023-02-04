@@ -1,7 +1,10 @@
 from utils.singleton import Singleton
+from utils.output import *
+
 
 class ResourceManager(metaclass=Singleton):
     def __init__(self):
+        self.out = Output()
         self.resources = {
             'printer': 2,
             'scanner': 1,
@@ -27,13 +30,13 @@ class ResourceManager(metaclass=Singleton):
             proc_quantity = getattr(process, resource)
 
             if(proc_quantity > max_quantity):
-                print(f'O Processo {process.pid} não conseguiu ser criado (recursos insuficientes).')
+                self.out.error(EXCEEDED_RESOURCES, pid=process.pid)
                 return -1
 
             if(proc_quantity > max_quantity-self.allocated_resources[resource]):
                 if(process.pid in self.resource_process[resource]):
                     return 1
-                print(f"O processo {process.pid} foi bloqueado (não conseguiu obter {resource} - requisitado: {proc_quantity} (disponível {max_quantity-self.allocated_resources[resource]})).")
+                self.out.error(BLOCKED_DUE_RESOURCES, pid=process.pid, resource=resource, proc_quantity=proc_quantity, max_quantity=max_quantity, remaning=self.allocated_resources[resource])
                 return 0
             
         return 1

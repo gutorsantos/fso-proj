@@ -1,5 +1,6 @@
 from utils.ascii_table import make_table
 from utils.singleton import Singleton
+from utils.output import *
 
 class Memory(metaclass=Singleton):
     def __init__(self, real_time_size, user_size) -> None:
@@ -7,6 +8,7 @@ class Memory(metaclass=Singleton):
         self.user_size = user_size
         self.size = self.real_time_size + self.user_size
         self.bit_map = ['0']*self.size
+        self.out = Output()
 
     def __repr__(self):
         return make_table(self.bit_map) 
@@ -54,13 +56,13 @@ class Memory(metaclass=Singleton):
         start_addr = self.__can_alloc(priority, mem_block_size)
 
         if(start_addr == -1):
-            print('O processo {pid} não pode ser alocado na memória por falta de espaço')
+            self.out.error(NOT_ENOGH_MEMO, pid=pid)
             return start_addr
 
         for i in range(start_addr, start_addr+mem_block_size):
             self.bit_map[i] = '1'
 
-        print(self)
+        # self.out.debug(self)
         return start_addr
 
     def free(self, start_addr, block_size):
