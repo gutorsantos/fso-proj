@@ -1,10 +1,8 @@
 from process.process_manager import ProcessManager
 from file.file_manager import FileManager
 from memory.memory_manager import MemoryManager
-from kernel.clock import Clock
 from resources.resource_manager import ResourceManager
 import time
-from file.operations import Operation
 from sys import argv
 from utils.output import Output, DEBUG_MODE_ON
 import operator
