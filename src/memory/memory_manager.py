@@ -9,7 +9,7 @@ class MemoryManager(metaclass=Singleton):
         self.memory = Memory(self.MEMORY_REAl_TIME_SIZE, self.MEMORY_USER_SIZE)
 
     def alloc(self, process: Process):
-        process.memory_start_block = self.memory.malloc(process.priority, process.memory_block_size)
+        process.memory_start_block = self.memory.malloc(process.priority, process.memory_block_size, process.pid)
         return process.memory_start_block
     
     def free(self, process: Process):

@@ -79,8 +79,8 @@ class ProcessManager:
         print(f'''process {process.pid} => \nP{process.pid} STARTED''')
         while process.process_time > 0:
 
-            print(f'P{process.pid} instruction {o}')
             if(o < len(operations)):
+                print(f'P{process.pid} instruction {o}')
                 self.file_manager.execute_operation(operations[o], process)
                 o += 1
             process.process_time -= 1
@@ -101,8 +101,8 @@ class ProcessManager:
             if(not self.queue.real_time_queue.empty()):
                 self.flag_rt_interrupt = True
 
-            print(f'P{process.pid} instruction {o}')
             if(o < len(operations)):
+                print(f'P{process.pid} instruction {o}')
                 self.file_manager.execute_operation(operations[o], process)
                 o += 1
             remaining_quantum -= 1

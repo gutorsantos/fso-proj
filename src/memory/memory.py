@@ -39,16 +39,28 @@ class Memory(metaclass=Singleton):
         start_addr, _ = min(free_block, key=lambda x: x[1])
 
         return start_addr
+    
+    def __can_alloc(self, priority, size):
+        if(priority > 0):
+            if(size <= self.user_size):
+                return 0 
+            return -1
+        
+        if(size <= self.real_time_size):
+            return 0
+        return -1
 
-    def malloc(self, priority, mem_block_size):
-        start_addr = self.__best_fit(priority, mem_block_size)
+    def malloc(self, priority, mem_block_size, pid):
+        start_addr = self.__can_alloc(priority, mem_block_size)
 
         if(start_addr == -1):
-            print('O processo não pode ser alocado na memória por falta de espaço')
+            print('O processo {pid} não pode ser alocado na memória por falta de espaço')
             return start_addr
 
         for i in range(start_addr, start_addr+mem_block_size):
             self.bit_map[i] = '1'
+
+        print(self)
         return start_addr
 
     def free(self, start_addr, block_size):
