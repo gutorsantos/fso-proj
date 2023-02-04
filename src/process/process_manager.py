@@ -156,8 +156,7 @@ class ProcessManager:
                         result = self.__context_switching(first)
                         if(result > 0):
                             self.user_running()
-                        # self.queue.user_queue.aging()
-                        print(self.queue.user_queue.q2.queue)
+                        # print(self.queue.user_queue.q2.queue)
                     elif(not resources):
                         self.out.debug(BLOCKED_PROCESS)
                         self.blocked_processes.append(first[0])

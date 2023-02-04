@@ -2,12 +2,14 @@ from queue import Queue
 import time
 from threading import Thread
 from process.process import Process
+from utils.output import *
 
 MAX_QUEUE_SIZE = 1000
 
 class UserQueue:
 
     def __init__(self) -> None:
+        self.out = Output()
         self.q1 = Queue()                       # RR 1-5
         self.q2 = Queue()                       # RR 6-9
         self.q3 = Queue()                       # RR >= 10
@@ -57,10 +59,11 @@ class UserQueue:
             return 
         
         if(last_queue == self.q1):
-            print(f'process {process.pid} desceu para fila 2')
             self.q2.put(process)
+            self.out.debug(DOWN_PROCESS, pid=process.pid, queue=2)
         elif(last_queue == self.q2):
             self.q3.put(process)
+            self.out.debug(DOWN_PROCESS, pid=process.pid, queue=3)
         elif(last_queue == self.q3):
             self.q3.put(process)
         # else:
@@ -83,14 +86,15 @@ class UserQueue:
         q3 = self.q3.queue.copy()
         for process in self.q2.queue:
             if(process.priority <= self.Q1_MAX_PRIORITY):
-                print(f'processo {process.pid} subiu para fila 1')
                 self.q1.put(process)
                 q2.remove(process)
+                self.out.debug(UP_PROCESS, pid=process.pid, queue=1)
+
         for process in self.q3.queue:
             if(process.priority > self.Q1_MAX_PRIORITY and process.priority <= self.Q2_MAX_PRIORITY):
-                print(f'processo {process.pid} subiu para fila 2')
                 self.q2.put(process)
                 q3.remove(process)
+                self.out.debug(UP_PROCESS, pid=process.pid, queue=2)
 
         self.q2.queue = q2.copy()
         self.q3.queue = q3.copy()

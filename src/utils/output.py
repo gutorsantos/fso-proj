@@ -25,6 +25,8 @@ WAITING_FOR_RT_PROCESS = 13
 WAITING_FOR_USER_PROCESS = 14
 BLOCKED_PROCESS = 15
 DEBUG_MODE_ON = 16
+DOWN_PROCESS = 18
+UP_PROCESS = 19
 
 class Output(metaclass=Singleton):
 
@@ -117,6 +119,12 @@ class Output(metaclass=Singleton):
 
             case 16:
                 msg += Fore.GREEN + 'DEGUB MODE ON'
+
+            case 18:
+                msg += Fore.BLUE + f'process {kwargs["pid"]} desceu para fila {kwargs["queue"]}'
+
+            case 19:
+                msg += Fore.BLUE + f'process {kwargs["pid"]} subiu para fila {kwargs["queue"]}'
             
         msg = msg + Fore.RESET
         print(msg)

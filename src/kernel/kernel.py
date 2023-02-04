@@ -31,7 +31,6 @@ class Kernel:
         sorted_proc = list(sorted(self.process_manager.processes_table, key=operator.attrgetter('starting_time')))
         acc = 0
         for p in sorted_proc:
-            print(p.starting_time-acc)
             time.sleep(p.starting_time-acc)
             self.process_manager.insert_process_queue(p)
             acc = p.starting_time
