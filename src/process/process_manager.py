@@ -87,6 +87,7 @@ class ProcessManager:
                 o += 1
             process.process_time -= 1
             process.cpu_time += 1
+            self.queue.user_queue.aging()
             time.sleep(1)
         
         self.out.log(PROCESS_RETURN_SIGINT, pid=process.pid)
@@ -94,6 +95,7 @@ class ProcessManager:
         self.memory_manager.free(process)
 
     def user_running(self):
+        self.queue.user_queue.up()
         process, queue = self.current_proc
         remaining_quantum = self.queue.user_queue.get_queue_quantum(queue)
         self.flag_rt_interrupt = False
@@ -112,6 +114,7 @@ class ProcessManager:
             remaining_quantum -= 1
             process.process_time -= 1
             process.cpu_time += 1
+            self.queue.user_queue.aging()
             time.sleep(1)
 
         if(process.process_time <= 0):
@@ -154,7 +157,7 @@ class ProcessManager:
                         if(result > 0):
                             self.user_running()
                         # self.queue.user_queue.aging()
-                        # print(self.queue.user_queue.q2.queue)
+                        print(self.queue.user_queue.q2.queue)
                     elif(not resources):
                         self.out.debug(BLOCKED_PROCESS)
                         self.blocked_processes.append(first[0])

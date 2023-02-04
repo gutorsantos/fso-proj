@@ -68,22 +68,30 @@ class UserQueue:
         
     def aging(self):
         for proc in self.q1.queue:
-            proc.priority -= 1
+            proc.priority = max(1, proc.priority-1)
 
         for proc in self.q2.queue:
-            proc.priority -= 1
+            proc.priority = max(1, proc.priority-1)
 
         for proc in self.q3.queue:
-            proc.priority -= 1
+            proc.priority = max(1, proc.priority-1)
         
-        self.up()
+        # self.up()
 
     def up(self):
+        q2 = self.q2.queue.copy()
+        q3 = self.q3.queue.copy()
         for process in self.q2.queue:
             if(process.priority <= self.Q1_MAX_PRIORITY):
                 print(f'processo {process.pid} subiu para fila 1')
                 self.q1.put(process)
+                q2.remove(process)
         for process in self.q3.queue:
             if(process.priority > self.Q1_MAX_PRIORITY and process.priority <= self.Q2_MAX_PRIORITY):
                 print(f'processo {process.pid} subiu para fila 2')
                 self.q2.put(process)
+                q3.remove(process)
+
+        self.q2.queue = q2.copy()
+        self.q3.queue = q3.copy()
+        
