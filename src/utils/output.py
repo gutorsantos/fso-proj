@@ -8,6 +8,7 @@ NO_PERMISSION_REMOVE_FILE = 3           # doest not have permission
 INEXISTENT_REMOVE_FILE = 4              # file does not exist
 EXCEEDED_RESOURCES = 5                  # system does not have the requested number of resources
 BLOCKED_DUE_RESOURCES = 6               # process was blocked due to cant get requested resources
+OPERATION_NOT_PERFORMED = 17            # process cycle number is less than number of operations
 
 # SUCESSFUL MESSAGES
 SUCESSFUL_REMOVE_FILE  = 7              # file deleted sucessfully
@@ -34,22 +35,31 @@ class Output(metaclass=Singleton):
         msg = Fore.RED + ''
         match code:
             case 1:
+                msg += Fore.MAGENTA + f'''\n\ndispatcher =>  ''' + Fore.RED
                 msg += f'O processo {kwargs["pid"]} não pode ser alocado na memória por falta de espaço'
                 
             case 2:
-                msg += f'O processo {kwargs["pid"]} não pode criar o arquivo {kwargs["filename"]} (falta de espaço).'
+                msg += Fore.CYAN + f'\tSistema de arquivo => ' + Fore.RED
+                msg += f'\tO processo {kwargs["pid"]} não pode criar o arquivo {kwargs["filename"]} (falta de espaço).'
             
             case 3:
+                msg += Fore.CYAN + f'\tSistema de arquivo => ' + Fore.RED
                 msg += f'O processo {kwargs["process"].pid} não pode deletar o arquivo {kwargs["filename"]} (sem permissão).'
             
             case 4:
-                msg += f'O processo {kwargs["pid"]} não pode deletar o arquivo {kwargs["filename"]} porque ele não existe.'
+                msg += Fore.CYAN + f'\tSistema de arquivo => ' + Fore.RED
+                msg += f'\tO processo {kwargs["pid"]} não pode deletar o arquivo {kwargs["filename"]} porque ele não existe.'
 
             case 5:
-                msg += f'O Processo {kwargs["pid"]} não conseguiu ser criado (recursos insuficientes)'
+                msg += Fore.MAGENTA + f'''\n\ndispatcher => ''' + Fore.RED
+                msg += f'O processo {kwargs["pid"]} não conseguiu ser criado (recursos insuficientes)'
 
             case 6:
-                msg += f'O processo {kwargs["pid"]} foi bloqueado (não conseguiu obter {kwargs["resource"]} - requisitado: {kwargs["proc_quantity"]} (disponível {kwargs["max_quantity"]-kwargs["remaning"]})).'
+                msg += Fore.MAGENTA + f'''\n\ndispatcher => ''' + Fore.RED
+                msg += f'\tO processo {kwargs["pid"]} foi bloqueado (não conseguiu obter {kwargs["resource"]} - requisitado: {kwargs["proc_quantity"]} (disponível {kwargs["max_quantity"]-kwargs["remaning"]})).'
+
+            case 17:
+                msg += f'A operação "{kwargs["op"]}" não foi executada pois o processo {kwargs["pid"]} encerrou antes'
 
             case _:
                 msg += 'Error'
@@ -58,23 +68,25 @@ class Output(metaclass=Singleton):
         print(msg)
 
     def sucess(self, code, **kwargs):
-        msg = ''
+        msg = Fore.GREEN + ''
         match code:
             case 7:
-                msg += f'O processo {kwargs["pid"]} deletou o arquivo {kwargs["filename"]}.'
+                msg += Fore.CYAN + f'\tSistema de arquivo => ' + Fore.GREEN
+                msg += f'\tO processo {kwargs["pid"]} deletou o arquivo {kwargs["filename"]}.'
                 
             case 8:
-                msg += f'O processo {kwargs["pid"]} criou o arquivo {kwargs["filename"]} (blocos {" ".join(kwargs["block_range"])}).'
+                msg += Fore.CYAN + f'\tSistema de arquivo => ' + Fore.GREEN
+                msg += f'\tO processo {kwargs["pid"]} criou o arquivo {kwargs["filename"]} (blocos {" ".join(kwargs["block_range"])}).'
 
-        msg = Fore.GREEN + msg + Fore.RESET
+        msg =  msg + Fore.RESET
         print(msg)
 
     def log(self, code, **kwargs):
         msg = Fore.MAGENTA + ''
         match code:
             case 9:
-                msg += f'''dispatcher => {kwargs['process']}'''
-                # msg += f'''process {kwargs['process']['pid']} => \nP{kwargs['process']['pid']} STARTED'''
+                msg += f'''\n\ndispatcher => {kwargs['process']} \n'''
+                msg += f'''process {kwargs['pid']} => \nP{kwargs['pid']} STARTED'''
                 
             case 10:
                 msg += f'P{kwargs["pid"]} instruction {kwargs["op"]}'

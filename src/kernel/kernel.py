@@ -45,7 +45,9 @@ class Kernel:
             self.clock.thread.join()
             
         except KeyboardInterrupt:
-            print('teste')
+            print(self.file_manager.disk)
+            print(self.memory_manager.memory)
+            self.file_manager.check_operations_left(self.process_manager.terminated_process)
             exit()
         # ========================== END PROCESS SCHEDULING TEST =========================================== 
 

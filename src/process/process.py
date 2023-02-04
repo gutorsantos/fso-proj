@@ -10,6 +10,7 @@ class Process:
         self.starting_time = int(process[0].strip())
         self.process_time = int(process[2].strip())
         self.waiting_time = 0
+        self.cpu_time = 0
         self.printer = int(process[4].strip())
         self.scanner = int(process[5].strip())
         self.modem = int(process[6].strip())

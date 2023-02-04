@@ -21,6 +21,7 @@ class ProcessManager:
         self.real_time_thread = Thread(target=self.real_time_queue_thread, daemon=True)
         self.user_thread = Thread(target=self.user_queue_thread, daemon=True)
         self.queue_lock = Lock()
+        self.terminated_process = []
         self.blocked_processes = []
         self.flag_rt_interrupt = False
         self.out = Output()
@@ -77,18 +78,19 @@ class ProcessManager:
         process, _ = self.current_proc
         o = 0
         operations = self.file_manager.get_operations(process.pid)
-        self.out.log(START_PROCESS, process=process)
+        self.out.log(START_PROCESS, process=process, pid=process.pid)
         while process.process_time > 0:
 
-            print(f'executando processo {process.pid}')
+            self.out.log(PROCESS_INSTRUCTION, pid=process.pid, op=process.cpu_time)
             if(o < len(operations)):
-                self.out.log(PROCESS_INSTRUCTION, pid=process.pid, op=o)
                 self.file_manager.execute_operation(operations[o], process)
                 o += 1
             process.process_time -= 1
+            process.cpu_time += 1
             time.sleep(1)
         
         self.out.log(PROCESS_RETURN_SIGINT, pid=process.pid)
+        self.terminated_process.append(process.pid)
 
     def user_running(self):
         process, queue = self.current_proc
@@ -96,25 +98,26 @@ class ProcessManager:
         self.flag_rt_interrupt = False
         o = 0
         operations = self.file_manager.get_operations(process.pid)
-        self.out.log(START_PROCESS, process=process)
+        self.out.log(START_PROCESS, process=process, pid=process.pid)
         while remaining_quantum > 0 and process.process_time > 0:
 
             if(not self.queue.real_time_queue.empty()):
                 self.flag_rt_interrupt = True
 
-            print(f'executando processo {process.pid}')
+            self.out.log(PROCESS_INSTRUCTION, pid=process.pid, op=process.cpu_time)
             if(o < len(operations)):
-                self.out.log(PROCESS_INSTRUCTION, pid=process.pid, op=o)
                 self.file_manager.execute_operation(operations[o], process)
                 o += 1
             remaining_quantum -= 1
             process.process_time -= 1
+            process.cpu_time += 1
             time.sleep(1)
 
         if(process.process_time <= 0):
             self.out.debug(DEALLOCATED_RESOURCES)
             self.out.log(PROCESS_RETURN_SIGINT, pid=process.pid)
             self.resource_manager.deallocate(process)
+            self.terminated_process.append(process.pid)
             self.unblock_processes()   
         else:
             self.queue.user_queue.down(*self.current_proc, self.flag_rt_interrupt)

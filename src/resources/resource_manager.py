@@ -23,7 +23,6 @@ class ResourceManager(metaclass=Singleton):
             'modem': [],
             'sata': []
         }
-        pass
 
     def __can_alloc(self, process):
         for resource, max_quantity in self.resources.items():

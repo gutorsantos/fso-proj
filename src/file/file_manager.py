@@ -71,4 +71,10 @@ class FileManager(metaclass=Singleton):
 
     def get_operations(self, pid: int):
         return list(filter(lambda o: o.process_id == pid, self.operations))
-
+    
+    def check_operations_left(self, finished_proc):
+        for f in finished_proc:
+            remaning = self.get_operations(f)
+            if(len(remaning) > 0):
+                for o in remaning:
+                    self.out.error(OPERATION_NOT_PERFORMED, pid=o.process_id, op=o)
