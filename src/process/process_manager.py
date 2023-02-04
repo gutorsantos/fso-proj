@@ -91,6 +91,7 @@ class ProcessManager:
         
         self.out.log(PROCESS_RETURN_SIGINT, pid=process.pid)
         self.terminated_process.append(process.pid)
+        self.memory_manager.free(process)
 
     def user_running(self):
         process, queue = self.current_proc
@@ -118,6 +119,7 @@ class ProcessManager:
             self.out.log(PROCESS_RETURN_SIGINT, pid=process.pid)
             self.resource_manager.deallocate(process)
             self.terminated_process.append(process.pid)
+            self.memory_manager.free(process)
             self.unblock_processes()   
         else:
             self.queue.user_queue.down(*self.current_proc, self.flag_rt_interrupt)
