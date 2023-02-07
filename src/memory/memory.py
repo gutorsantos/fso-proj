@@ -13,34 +13,34 @@ class Memory(metaclass=Singleton):
     def __repr__(self):
         return make_table(self.bit_map) 
 
-    def __get_free_blocks(self, priority):
-        pivot = 0 if not priority else self.real_time_size
-        max_len = self.real_time_size if not priority else self.size
-        free_block_sizes = []
-        while pivot < max_len:
-            if self.bit_map[pivot] == '1':
-                pivot += 1
-                continue
-            start = pivot
-            while pivot < max_len and self.bit_map[pivot] == '0':
-                pivot += 1
-            end = pivot - 1
-            free_block_sizes.append([start, end - start + 1])
-            pivot += 1
-        return free_block_sizes
+    # def __get_free_blocks(self, priority):
+    #     pivot = 0 if not priority else self.real_time_size
+    #     max_len = self.real_time_size if not priority else self.size
+    #     free_block_sizes = []
+    #     while pivot < max_len:
+    #         if self.bit_map[pivot] == '1':
+    #             pivot += 1
+    #             continue
+    #         start = pivot
+    #         while pivot < max_len and self.bit_map[pivot] == '0':
+    #             pivot += 1
+    #         end = pivot - 1
+    #         free_block_sizes.append([start, end - start + 1])
+    #         pivot += 1
+    #     return free_block_sizes
 
     
-    def __best_fit(self, priority, mem_block_size):
-        free_block = self.__get_free_blocks(priority)
-        free_block = list(filter(lambda x: x[1] >= mem_block_size, free_block))
-        free_block = list(map(lambda x: (x[0], x[1]-mem_block_size), free_block))
+    # def __best_fit(self, priority, mem_block_size):
+    #     free_block = self.__get_free_blocks(priority)
+    #     free_block = list(filter(lambda x: x[1] >= mem_block_size, free_block))
+    #     free_block = list(map(lambda x: (x[0], x[1]-mem_block_size), free_block))
 
-        if (not len(free_block)):
-            return -1
+    #     if (not len(free_block)):
+    #         return -1
 
-        start_addr, _ = min(free_block, key=lambda x: x[1])
+    #     start_addr, _ = min(free_block, key=lambda x: x[1])
 
-        return start_addr
+    #     return start_addr
     
     def __can_alloc(self, priority, size):
         if(priority > 0):
