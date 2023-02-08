@@ -12,8 +12,5 @@ class ProcessesQueue:
         self.user_queue = UserQueue()
         self.MAX_QUEUE_SIZE = 1000
 
-    def empty(self):
-        return self.real_time_queue.empty()
-    
     def get_size(self):
         return self.real_time_queue.qsize() + self.user_queue.qsize()
