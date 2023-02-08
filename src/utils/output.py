@@ -10,6 +10,7 @@ EXCEEDED_RESOURCES = 5                  # system does not have the requested num
 BLOCKED_DUE_RESOURCES = 6               # process was blocked due to cant get requested resources
 OPERATION_NOT_PERFORMED = 17            # process cycle number is less than number of operations
 MAX_PROCESSES_QUEUE_REACHED = 20        # max process queue size reached
+BLOCKED_DUE_MEMORY = 21                 # process was blocked due to cant allocate memory
 
 # SUCESSFUL MESSAGES
 SUCESSFUL_REMOVE_FILE  = 7              # file deleted sucessfully
@@ -63,8 +64,13 @@ class Output(metaclass=Singleton):
 
             case 17:
                 msg += f'A operação "{kwargs["op"]}" não foi executada pois o processo {kwargs["pid"]} encerrou antes'
+
             case 20:
                 msg += f'O processo {kwargs["pid"]} não pode ser inserido na fila pois sua capacidade máxima foi atingida {kwargs["max_size"]}'
+
+            case 21:
+                msg += Fore.MAGENTA + f'''\n\ndispatcher => ''' + Fore.RED
+                msg += f'\tO processo {kwargs["pid"]} foi bloqueado (não conseguiu ser alocado na memória).'
 
             case _:
                 msg += 'Error'

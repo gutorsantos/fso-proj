@@ -54,12 +54,16 @@ class ProcessManager:
             Process: the last current process
         """
         last_proc, last_queue = self.current_proc
-        if(last_proc):
-            self.memory_manager.free(last_proc)
+        # if(last_proc):
+        #     self.memory_manager.free(last_proc)
         if(process[0]):
             result = self.memory_manager.alloc(process[0])
-            if(result < 0):
+            if(result == -2):
                 return -1
+            if(result == -1):
+                self.out.debug(BLOCKED_PROCESS)
+                self.blocked_processes.append(process[0])
+                return 0
         self.current_proc = process
         return 1
     
@@ -69,8 +73,9 @@ class ProcessManager:
                 
     def unblock_processes(self):
         for blocked in self.blocked_processes:
+            result_memo = self.memory_manager.alloc(blocked)
             result = self.resource_manager.request(blocked)
-            if(result > 0):
+            if(result > 0 and result_memo >= 0):
                 self.blocked_processes.remove(blocked)
                 self.queue.user_queue.put(blocked)
                 break

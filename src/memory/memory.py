@@ -44,22 +44,45 @@ class Memory(metaclass=Singleton):
     #     start_addr, _ = min(free_block, key=lambda x: x[1])
 
     #     return start_addr
-    
-    def __can_alloc(self, priority, size):
+
+    def __can_alloc(self, pid, priority, size):
         if(priority > 0):
-            if(size <= self.user_size):
-                return 0 
-            return -1
-        
-        if(size <= self.real_time_size):
-            return 0
-        return -1
+            print('entrei 1')
+            if(size > self.user_size):
+                self.out.error(NOT_ENOGH_MEMO, pid=pid)
+                return -2
+        else:
+            if(size > self.real_time_size):
+                print('entrei 2')
+                self.out.error(NOT_ENOGH_MEMO, pid=pid)
+                return -2
+            
+        return 1
+    
+
+    def __first_fit(self, pid, priority, size):
+        result = self.__can_alloc(pid, priority, size)
+        if(result < 0):
+            return result
+
+        start_index = 64 if priority > 0 else 0
+        max_index = 1024 if priority > 0 else 64
+
+        print(start_index)
+        print(max_index)
+        for index in range(start_index, max_index):
+            if(self.bit_map[index] == '0'):
+                space = self.bit_map[index:index+size]
+                if(space.count('0') == size):
+                    return index
+
+        self.out.error(BLOCKED_DUE_MEMORY, pid=pid)
+        return -1    
 
     def malloc(self, priority, mem_block_size, pid):
-        start_addr = self.__can_alloc(priority, mem_block_size)
+        start_addr = self.__first_fit(pid, priority, mem_block_size)
 
-        if(start_addr == -1):
-            self.out.error(NOT_ENOGH_MEMO, pid=pid)
+        if(start_addr < 0):
             return start_addr
 
         for i in range(start_addr, start_addr+mem_block_size):
