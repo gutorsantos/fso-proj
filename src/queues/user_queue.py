@@ -96,7 +96,7 @@ class UserQueue:
                 self.out.debug(UP_PROCESS, pid=process.pid, queue=1)
 
         for process in self.q3.queue:
-            if(process.priority > self.Q1_MAX_PRIORITY and process.priority <= self.Q2_MAX_PRIORITY):
+            if(process.priority > self.Q1_MAX_PRIORITY and process.priority < self.Q3_MAX_PRIORITY):
                 self.q2.put(process)
                 q3.remove(process)
                 self.out.debug(UP_PROCESS, pid=process.pid, queue=2)
