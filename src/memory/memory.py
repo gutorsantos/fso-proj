@@ -47,13 +47,11 @@ class Memory(metaclass=Singleton):
 
     def __can_alloc(self, pid, priority, size):
         if(priority > 0):
-            print('entrei 1')
             if(size > self.user_size):
                 self.out.error(NOT_ENOGH_MEMO, pid=pid)
                 return -2
         else:
             if(size > self.real_time_size):
-                print('entrei 2')
                 self.out.error(NOT_ENOGH_MEMO, pid=pid)
                 return -2
             
@@ -68,8 +66,6 @@ class Memory(metaclass=Singleton):
         start_index = 64 if priority > 0 else 0
         max_index = 1024 if priority > 0 else 64
 
-        print(start_index)
-        print(max_index)
         for index in range(start_index, max_index):
             if(self.bit_map[index] == '0'):
                 space = self.bit_map[index:index+size]
