@@ -6,6 +6,7 @@ import time
 from sys import argv
 from utils.output import Output, DEBUG_MODE_ON
 import operator
+from utils.dir import ROOT_DIR
 
 class Kernel:
     def __init__(self) -> None:
@@ -45,8 +46,11 @@ class Kernel:
             self.process_manager.user_thread.join()
             
         except KeyboardInterrupt:
-            print(self.file_manager.disk)
-            print(self.memory_manager.memory)
+            print('')
+            with open(ROOT_DIR+'output/memory.out', 'w+') as f:
+                f.write(str(self.memory_manager.memory))
+            with open(ROOT_DIR+'output/disk.out', 'w+') as f:
+                f.write(str(self.file_manager.disk))
             self.file_manager.check_operations_left(self.process_manager.terminated_process)
             exit()
 
