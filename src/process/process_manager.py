@@ -141,8 +141,6 @@ class ProcessManager:
                 if(result > 0):
                     self.real_time_running()
                 self.queue_lock.release()
-                print(self.queue.user_queue.q2.queue)
-                print(self.queue.user_queue.q3.queue)
             time.sleep(1)
 
     def user_queue_thread(self):
@@ -160,8 +158,6 @@ class ProcessManager:
                         result = self.__context_switching(first)
                         if(result > 0):
                             self.user_running()
-                        print(self.queue.user_queue.q2.queue)
-                        print(self.queue.user_queue.q3.queue)
                     elif(not resources):
                         self.out.debug(BLOCKED_PROCESS)
                         self.blocked_processes.append(first[0])
