@@ -8,12 +8,12 @@ class UserQueue:
 
     def __init__(self) -> None:
         self.out = Output()
-        self.q1 = Queue()                       # RR 1-5
-        self.q2 = Queue()                       # RR 6-9
-        self.q3 = Queue()                       # RR >= 10
-        self.Q1_MAX_PRIORITY = 5        
-        self.Q2_MAX_PRIORITY = 6        
-        self.Q3_MAX_PRIORITY = 10
+        self.q1 = Queue()                       # RR 1-20
+        self.q2 = Queue()                       # RR 21-49
+        self.q3 = Queue()                       # RR >= 50
+        self.Q1_MAX_PRIORITY = 20        
+        self.Q2_MAX_PRIORITY = 21        
+        self.Q3_MAX_PRIORITY = 50
         self.Q1_QUANTUM = 5        
         self.Q2_QUANTUM = 10        
         self.Q3_QUANTUM = 15
