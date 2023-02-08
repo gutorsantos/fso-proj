@@ -12,7 +12,9 @@ Feito pelos alunos:
 
 ### Execução
 
-Pode ser necessário instalar a dependência colorama:
+A versão do Python utilizada para a execução do programa deve ser a 3.10.6.
+
+Além disso, pode ser necessário instalar a dependência colorama:
 ```
 pip install colorama
 ```
