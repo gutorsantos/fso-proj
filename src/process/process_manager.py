@@ -35,8 +35,9 @@ class ProcessManager:
         self.processes_table = [Process(p.split(','), id) for (id, p) in enumerate(list)]
 
     def insert_process_queue(self, process: Process):
-        # if(not process or process.process_time <= 0 or self.queue.get_size() > 1000):
-        #     return
+        if(self.queue.get_size() > self.queue.MAX_QUEUE_SIZE):
+            self.out.error(MAX_PROCESSES_QUEUE_REACHED, pid=process.pid, max_size=self.queue.MAX_QUEUE_SIZE)
+            return
 
         if (process.priority):
             self.queue.user_queue.put(process)

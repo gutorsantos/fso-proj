@@ -4,8 +4,6 @@ from threading import Thread
 from process.process import Process
 from utils.output import *
 
-MAX_QUEUE_SIZE = 1000
-
 class UserQueue:
 
     def __init__(self) -> None:

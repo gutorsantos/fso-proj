@@ -32,7 +32,9 @@ class Kernel:
         acc = 0
         for p in sorted_proc:
             time.sleep(p.starting_time-acc)
+            self.process_manager.queue_lock.acquire()
             self.process_manager.insert_process_queue(p)
+            self.process_manager.queue_lock.release()
             acc = p.starting_time
 
     def run(self) -> None:
