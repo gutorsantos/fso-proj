@@ -17,6 +17,7 @@ class UserQueue:
         self.Q1_QUANTUM = 5        
         self.Q2_QUANTUM = 10        
         self.Q3_QUANTUM = 15
+        self.AGING_WAITING_TIME = 5
                 
 
     def get_queue_quantum(self, queue):
@@ -57,11 +58,14 @@ class UserQueue:
             return 
         
         if(last_queue == self.q1):
+            process.priority = self.Q3_MAX_PRIORITY-1
             self.q2.put(process)
             self.out.debug(DOWN_PROCESS, pid=process.pid, queue=2)
         elif(last_queue == self.q2):
+            process.priority = self.Q3_MAX_PRIORITY + 5
             self.q3.put(process)
             self.out.debug(DOWN_PROCESS, pid=process.pid, queue=3)
+            process.priority = self.Q3_MAX_PRIORITY + 5
         elif(last_queue == self.q3):
             self.q3.put(process)
         # else:
@@ -69,16 +73,20 @@ class UserQueue:
         
     def aging(self):
         for proc in self.q1.queue:
-            proc.priority = max(1, proc.priority-1)
+            proc.waiting_time += 1
+            if(proc.waiting_time % self.AGING_WAITING_TIME == 0):
+                proc.priority = max(1, proc.priority-1)
 
         for proc in self.q2.queue:
-            proc.priority = max(1, proc.priority-1)
+            proc.waiting_time += 1
+            if(proc.waiting_time % self.AGING_WAITING_TIME == 0):
+                proc.priority = max(1, proc.priority-1)
 
         for proc in self.q3.queue:
-            proc.priority = max(1, proc.priority-1)
+            proc.waiting_time += 1
+            if(proc.waiting_time % self.AGING_WAITING_TIME == 0):
+                proc.priority = max(1, proc.priority-1)
         
-        # self.up()
-
     def up(self):
         q2 = self.q2.queue.copy()
         q3 = self.q3.queue.copy()
