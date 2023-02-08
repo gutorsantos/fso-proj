@@ -47,7 +47,7 @@ class ResourceManager(metaclass=Singleton):
 
         for resource in self.resources:
             proc_quantity = getattr(process, resource)
-            self.allocated_resources[resource] = proc_quantity
+            self.allocated_resources[resource] += proc_quantity
             self.resource_process[resource].append(process.pid)
         
         return 1
