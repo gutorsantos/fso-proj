@@ -8,6 +8,9 @@ class Disk:
     def __repr__(self):
         return make_table(self.bit_map) 
     
+    def __str__(self):
+        return self.__repr__()
+    
 
     def __first_fit(self, block_size):
         if(block_size > self.size):

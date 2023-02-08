@@ -12,6 +12,9 @@ class Memory(metaclass=Singleton):
 
     def __repr__(self):
         return make_table(self.bit_map) 
+    
+    def __str__(self):
+        return self.__repr__()
 
     # def __get_free_blocks(self, priority):
     #     pivot = 0 if not priority else self.real_time_size

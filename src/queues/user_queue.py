@@ -65,10 +65,16 @@ class UserQueue:
             process.priority = self.Q3_MAX_PRIORITY + 5
             self.q3.put(process)
             self.out.debug(DOWN_PROCESS, pid=process.pid, queue=3)
+<<<<<<< HEAD
         elif(last_queue == self.q3):
             process.priority = self.Q3_MAX_PRIORITY + 7
             self.q3.put(process)
 
+=======
+        else:
+            process.priority = self.Q3_MAX_PRIORITY + 7
+            self.q3.put(process)
+>>>>>>> 07f98d9df1c016b23136dfa9b7f27bf3bb3ff9cc
         
     def aging(self):
         for proc in self.q1.queue:

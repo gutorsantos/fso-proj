@@ -3,8 +3,6 @@ from queues.user_queue import UserQueue
 import time
 from threading import Thread
 
-
-
 class ProcessesQueue:
 
     def __init__(self) -> None:
